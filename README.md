@@ -38,6 +38,10 @@ Integrated with the [POTA Dashboard](https://www.pleasedontcode.com/please-over-
     - `POTA_User_WiFi.ino` → You manage Wi-Fi connection manually.
 5. Run the sketch
     - The device will connect to Wi-Fi, initialize POTA, and perform a one-shot OTA check.
+
+[![Getting Started with Please Over The Air](https://img.youtube.com/vi/FxSQxyJAVsU/0.jpg)](https://www.youtube.com/watch?v=FxSQxyJAVsU "Getting Started with Please Over The Air")
+[![Registering Your Device on the POTA Dashboard](https://img.youtube.com/vi/aC1VmWriOm0/0.jpg)](https://www.youtube.com/watch?v=aC1VmWriOm0 "Registering Your Device on the POTA Dashboard")
+[![Your first OTA Update](https://img.youtube.com/vi/u2OzN_Ubm_A/0.jpg)](https://www.youtube.com/watch?v=u2OzN_Ubm_A "Your first OTA Update")
 	
 ## 🛡 Security
 

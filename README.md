@@ -79,18 +79,24 @@ git clone https://github.com/pleasedontcode/POTA.git
     - Set your `DEVICE_TYPE` (e.g., `ESP32_DEVKIT_V1`).
     - Set your `FIRMWARE_VERSION` (e.g., `"01.00.00"`).
 4. Upload one of the POTA examples
+   
     **Firmware Update Examples:**
    - `firmwareUpdate.ino` → Safe OTA updates with WebSocket notifications and boot-time checks
    - `firmwareManagerDashboard.ino` → Interactive OTA manager with POTA Cloud and manual upload support
+     
    **Dashboard Examples:**
    - `simpleDashboard.ino` → Basic sensor display with real-time data cards
    - `interactiveDashboard.ino` → Control widgets with sliders and toggles (demonstrates int/float precision)
    - `chartsDashboard.ino` → Data visualization with correlated temperature, energy, and pie charts
    - `fullDashboard.ino` → Complete smart greenhouse automation system (all 33 widgets)
-5. Run the sketch
+6. Run the sketch
    - The device will connect to Wi-Fi and initialize POTA
    - Firmware update examples will check for available updates at boot
    - Dashboard examples will create widgets and start real-time monitoring
+  
+[![Getting Started with Please Over The Air](https://img.youtube.com/vi/FxSQxyJAVsU/0.jpg)](https://www.youtube.com/watch?v=FxSQxyJAVsU "Getting Started with Please Over The Air")
+[![Registering Your Device on the POTA Dashboard](https://img.youtube.com/vi/aC1VmWriOm0/0.jpg)](https://www.youtube.com/watch?v=aC1VmWriOm0 "Registering Your Device on the POTA Dashboard")
+[![Your first OTA Update](https://img.youtube.com/vi/u2OzN_Ubm_A/0.jpg)](https://www.youtube.com/watch?v=u2OzN_Ubm_A "Your first OTA Update")
 
 ## 📊 Dashboard Widgets
 

@@ -167,6 +167,8 @@ This project is licensed under the MIT License. See LICENSE for details.
 
 📘 Documentation: [https://www.pleasedontcode.com/please-over-the-air](https://www.pleasedontcode.com/please-over-the-air/)
 
+⚡️ Article: [https://www.pleasedontcode.com/blog/building-real-time-iot-dashboards-with-pota](https://www.pleasedontcode.com/blog/building-real-time-iot-dashboards-with-pota)
+
 🛠 Repository: [https://github.com/pleasedontcode/POTA.git](https://github.com/pleasedontcode/POTA.git)
 
 ✉️ Author: Francesco Alessandro Colucci — info@pleasedontcode.com

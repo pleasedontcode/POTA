@@ -44,9 +44,10 @@
     #include <esp_https_ota.h>    // For OTA update functionality
     #include <esp_idf_version.h>  // For ESP-IDF version detection
     #include <mbedtls/md.h>       // For HMAC-SHA256 calculation
-    #include <WebSocketsClient.h> // For WebSocket communication
-    
-    #define WS_CLIENT_TYPE WebSocketsClient
+
+    // Use NuSock library (same as ESP8266/Opta) to avoid heap fragmentation
+    // from WebSocketsClient's internal SSL context allocation
+    #define WS_CLIENT_TYPE NuSockClient
     
 #elif defined(ESP8266)
     #include <ESP8266WiFi.h>
@@ -103,18 +104,11 @@ POTA::POTA() {
     
     // Register dashboard send handler
     // This lambda is called whenever dashboard needs to transmit data
+    // All platforms use NuSock library with send() for binary data
     _dashboard->setSendHandler([](uint8_t* data, size_t len) {
-        #if defined(ARDUINO_OPTA) || defined(ESP8266)
-            // Opta and ESP8266 use NuSock library with different API
-            if (_ws && _ws->connected()) {
-                _ws->send(data, len); // NuSock uses send() for binary data
-            }
-        #else
-            // ESP32 uses WebSocketsClient library
-            if (_ws && _ws->isConnected()) {
-                _ws->sendBIN(data, len); // Explicit binary transmission
-            }
-        #endif
+        if (_ws && _ws->connected()) {
+            _ws->send(data, len);
+        }
     });
 }
 
@@ -316,17 +310,10 @@ void POTA::loop(bool enableAutoReconnect) {
             Serial.println(errorToString(err));
             nextReconnectAttempt = millis() + reconnectInterval; // Schedule next attempt
         }
-    #if defined(ARDUINO_OPTA) || defined(ESP8266)
-    // Opta and ESP8266: NuSock uses different connection check
+    // All platforms use NuSock
     } else if (_ws && _ws->connected()) {
         _ws->loop(); // Process WebSocket events
     }
-    #else
-    // ESP32: WebSocketsClient library
-    } else if (_ws && _ws->isConnected()) {
-        _ws->loop(); // Process WebSocket events
-    }
-    #endif
     
     // Send pending dashboard updates to connected clients
     _dashboard->sendUpdates();
@@ -564,20 +551,19 @@ POTAError POTA::generateWsServerToken(const char* success,
 // ========================================
 // WEBSOCKET CONNECTION MANAGEMENT
 // ========================================
-#if defined(ARDUINO_OPTA) || defined(ESP8266)
 /**
- * @brief Arduino Opta and ESP8266: Global instance pointer for WebSocket callback bridge
- * 
+ * @brief Global instance pointer for WebSocket callback bridge
+ *
  * NuSock library requires C-style function pointers for callbacks.
  * We use this global to bridge to C++ member function.
  */
 static POTA* _potaInstance = nullptr;
 
 /**
- * @brief Arduino Opta and ESP8266: C-style bridge function for NuSock events
- * 
+ * @brief C-style bridge function for NuSock events
+ *
  * Forwards events to the actual POTA instance's member function.
- * 
+ *
  * @param client NuClient pointer (unused)
  * @param event Event type (connected, disconnected, message, etc.)
  * @param payload Event data payload
@@ -588,7 +574,6 @@ void nuSockBridge(NuClient* client, NuClientEvent event, const uint8_t* payload,
         _potaInstance->remoteWebSocketEvent((uint8_t)event, (uint8_t*)payload, len);
     }
 }
-#endif
 
 #if defined(ESP8266)
 /**
@@ -666,19 +651,9 @@ POTAError POTA::ensureWebSocketConnection() {
         Serial.println(F("[POTA] ⚙️ Creating WebSocketsClient"));
         _ws = new WS_CLIENT_TYPE();
         
-        // Platform-specific event handler registration
-        #if defined(ARDUINO_OPTA) || defined(ESP8266)
-            // Opta and ESP8266: NuSock requires C-style callback (cannot use lambda)
-            _potaInstance = this; // Set global for C-style callback
-            _ws->onEvent(nuSockBridge); // Register C-style bridge function
-        #else
-            // ESP32: WebSocketsClient can use lambda with capture
-            _ws->onEvent([this](WStype_t type, uint8_t* payload, size_t length){
-                this->remoteWebSocketEvent((uint8_t)type, payload, length);
-            });
-            _ws->setReconnectInterval(5000);  // Auto-reconnect after 5s
-            _ws->enableHeartbeat(30000, 10000, 3); // Ping every 30s, timeout 10s, max 3 missed
-        #endif    
+        // All platforms: NuSock requires C-style callback
+        _potaInstance = this;
+        _ws->onEvent(nuSockBridge);
     }
 
     // PREPARE CONNECTION: Fetch WebSocket URL and JWT from API (blocking HTTPS call)
@@ -728,8 +703,15 @@ POTAError POTA::ensureWebSocketConnection() {
             _ws->connect(); // Non-blocking
             
         #elif defined(ESP32)
-            // ESP32: Use WebSocketsClient with CA certificate validation
-            _ws->beginSslWithCA(wsHost, 443, wsPath, root_ca);
+            // ESP32: Use static WiFiClientSecure to avoid heap fragmentation
+            // (reuses same SSL context instead of allocating a new one each time)
+            static WiFiClientSecure wsClient;
+            static WiFiClientSecure* client = &wsClient;
+
+            wsClient.setCACert(root_ca);
+
+            _ws->begin(client, wsHost, 443, wsPath);
+            _ws->connect();
         #endif
         
         _wsConnecting = true; // Mark connection in progress
@@ -760,22 +742,16 @@ POTAError POTA::ensureWebSocketConnection() {
  */
 void POTA::remoteWebSocketEvent(uint8_t type, uint8_t * payload, size_t length) {
     
-    // Platform-specific type conversion
-    #if defined(ARDUINO_OPTA) || defined(ESP8266)
-        // Opta and ESP8266 use NuClientEvent enum - convert to WStype_t for common handling
-        WStype_t wsType;
-        switch(type) {
-            case CLIENT_EVENT_CONNECTED:    wsType = WStype_CONNECTED; break;
-            case CLIENT_EVENT_DISCONNECTED: wsType = WStype_DISCONNECTED; break;
-            case CLIENT_EVENT_MESSAGE_TEXT: wsType = WStype_TEXT; break;
-            case CLIENT_EVENT_MESSAGE_BINARY: wsType = WStype_BIN; break;
-            case CLIENT_EVENT_ERROR:        wsType = WStype_ERROR; break;
-            default: return; // Ignore minor events (handshake, fragments, etc.)
-        }
-    #else
-        // ESP32: Direct cast from WebSocketsClient library enum
-        WStype_t wsType = (WStype_t)type;
-    #endif
+    // All platforms use NuSock - convert NuClientEvent to WStype_t for common handling
+    WStype_t wsType;
+    switch(type) {
+        case CLIENT_EVENT_CONNECTED:       wsType = WStype_CONNECTED; break;
+        case CLIENT_EVENT_DISCONNECTED:    wsType = WStype_DISCONNECTED; break;
+        case CLIENT_EVENT_MESSAGE_TEXT:     wsType = WStype_TEXT; break;
+        case CLIENT_EVENT_MESSAGE_BINARY:  wsType = WStype_BIN; break;
+        case CLIENT_EVENT_ERROR:           wsType = WStype_ERROR; break;
+        default: return; // Ignore minor events (handshake, fragments, etc.)
+    }
     
     // Process event based on type
     switch(wsType) {

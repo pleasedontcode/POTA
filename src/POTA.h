@@ -104,8 +104,10 @@ typedef void (*POTACallback)(const char* version);
 #ifdef ESP32
     #include <WiFi.h>
     #include <WiFiClientSecure.h>
+    #define NUSOCK_FULL_COMPLIANCE
+    #include "utility/NuSock/NuSock.h"
     #define WIFI_CLIENT_TYPE WiFiClientSecure
-    
+
 #elif defined(ESP8266)
     #include <WiFiClientSecure.h>
     
@@ -126,7 +128,7 @@ typedef void (*POTACallback)(const char* version);
     #error "Unsupported platform! Please compile for ESP32, ESP8266 or Arduino Opta."
 #endif
 
-#if defined(ARDUINO_OPTA) || defined(ESP8266)
+#if defined(ARDUINO_OPTA) || defined(ESP8266) || defined(ESP32)
     /**
      * @enum WStype_t
      * @brief WebSocket event types (Arduino Opta and ESP8266 NuSock compatibility)

@@ -16,6 +16,20 @@
 #include <esp_crt_bundle.h> // Required for default public server trust
 #include <fcntl.h>
 
+// Compatibility: Espressif ESP32 core provides esp_crt_bundle_attach,
+// Arduino ESP32 Boards core renames it to arduino_esp_crt_bundle_attach
+// and removes esp_tls_conn_http_new_sync.
+// Declare both as weak — the one provided by the active core stays strong,
+// the missing one resolves to null at link time.
+#ifdef __cplusplus
+extern "C" {
+#endif
+__attribute__((weak)) esp_err_t esp_crt_bundle_attach(void *conf);
+__attribute__((weak)) esp_err_t arduino_esp_crt_bundle_attach(void *conf);
+#ifdef __cplusplus
+}
+#endif
+
 typedef void (*NuClientSecureEventCallback)(NuClient *client, NuClientEvent event, const uint8_t *payload, size_t len);
 
 /**
@@ -374,7 +388,12 @@ public:
         else
         {
             // Use Built-in Bundle (Fallback for public sites)
-            cfg.crt_bundle_attach = esp_crt_bundle_attach;
+            // Runtime dispatch: pick whichever function the active core provides
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waddress"
+            cfg.crt_bundle_attach = esp_crt_bundle_attach
+                ? esp_crt_bundle_attach : arduino_esp_crt_bundle_attach;
+#pragma GCC diagnostic pop
         }
 
         cfg.skip_common_name = false;
@@ -390,10 +409,14 @@ public:
             return false;
         }
 
-        // Synchronous Connect (Using correct API for ESP-IDF v5 / Arduino 3.0)
+        // Synchronous Connect using async API in a loop for cross-core compatibility
+        // (Arduino ESP32 Boards core removes esp_tls_conn_http_new_sync)
         String url = "wss://" + String(_host) + ":" + String(_port);
-        // Pass -1 as client_fd to indicate a new connection
-        int ret = esp_tls_conn_http_new_sync(url.c_str(), &cfg, _tls);
+        int ret;
+        do {
+            ret = esp_tls_conn_http_new_async(url.c_str(), &cfg, _tls);
+            if (ret == 0) delay(10); // connection in progress, yield
+        } while (ret == 0);
 
         if (ret != 1)
         { // indicates success

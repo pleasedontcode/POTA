@@ -1106,10 +1106,12 @@ POTAError POTA::getWebSocketUrl(char* outWSHost, size_t outWSHostSize, char* out
     int bodyLen = snprintf(buffer, BUF_SIZE,
                  "{"
                  "\"device_id\":\"%s\","
-                 "\"auth_token\":\"%s\""
+                 "\"auth_token\":\"%s\","
+                 "\"firmware_version\":\"%s\""
                  "}",
                  getSecureMACAddress().c_str(),
-                 _authToken);
+                 _authToken,
+                 _firmwareVersion);
 
     if (bodyLen < 0 || (size_t)bodyLen >= BUF_SIZE) {
         Serial.println("[POTA] ❌ BUFFER_OVERFLOW_REQUEST while building WS JSON request");

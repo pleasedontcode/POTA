@@ -4,7 +4,7 @@
   Author: Francesco Alessandro Colucci (pleasedontcode.com)
   License: MIT (see LICENSE file in the root of this project)
   Repository: https://github.com/pleasedontcode/POTA
-  Website/Service: https://www.pleasedontcode.com/please-over-the-air/
+  Website/Service: https://www.pleasedontcode.com/programming-over-the-air/
 
   Description:
     Interactive dashboard example showing bidirectional control.

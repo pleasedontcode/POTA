@@ -1,7 +1,7 @@
-# POTA — Please Over The Air
+# POTA — Programming Over The Air
 
 Secure, simple, and powerful library for **ESP32**, **ESP8266**, and **Arduino Opta** devices combining OTA firmware updates with real-time dashboard capabilities.  
-POTA integrates with the [Please Over The Air](https://www.pleasedontcode.com/please-over-the-air/) service to deliver remote firmware updates, monitor device telemetry, and control your IoT devices through interactive web dashboards featuring 30+ customizable widgets (sliders, charts, buttons, and more).
+POTA integrates with the [Programming Over The Air](https://www.pleasedontcode.com/programming-over-the-air/) service to deliver remote firmware updates, monitor device telemetry, and control your IoT devices through interactive web dashboards featuring 30+ customizable widgets (sliders, charts, buttons, and more).
 
 ## ✨ Features
 
@@ -27,7 +27,7 @@ POTA integrates with the [Please Over The Air](https://www.pleasedontcode.com/pl
 - **Automatic Wi-Fi Reconnection** — Built-in connection recovery on network disruptions
 
 ### 🌍 Cloud Integration
-- **Seamless Portal Integration** — Connect to [pleasedontcode.com/please-over-the-air](https://www.pleasedontcode.com/please-over-the-air/) service
+- **Seamless Portal Integration** — Connect to [pleasedontcode.com/programming-over-the-air](https://www.pleasedontcode.com/programming-over-the-air/) service
 - **Device Management** — Register and manage multiple devices from web portal
 - **Remote Monitoring** — View live device telemetry and status from anywhere
 - **Firmware Repository** — Upload and manage firmware versions in the cloud
@@ -70,7 +70,7 @@ git clone https://github.com/pleasedontcode/POTA.git
     - Open the Serial Monitor at 115200 baud.
     - Copy the printed MAC address.
 2. Register your device on the POTA portal
-    - Go to [https://www.pleasedontcode.com/please-over-the-air](https://www.pleasedontcode.com/please-over-the-air/).
+    - Go to [https://www.pleasedontcode.com/programming-over-the-air](https://www.pleasedontcode.com/programming-over-the-air/).
     - Enter the MAC address to create a new OTA project.
     - The portal will provide your `AUTH_TOKEN` and `SERVER_SECRET`.
 3. Set up `secrets.h`
@@ -94,7 +94,7 @@ git clone https://github.com/pleasedontcode/POTA.git
    - Firmware update examples will check for available updates at boot
    - Dashboard examples will create widgets and start real-time monitoring
   
-[![Getting Started with Please Over The Air](https://img.youtube.com/vi/FxSQxyJAVsU/0.jpg)](https://www.youtube.com/watch?v=FxSQxyJAVsU "Getting Started with Please Over The Air")
+[![Getting Started with Programming Over The Air](https://img.youtube.com/vi/FxSQxyJAVsU/0.jpg)](https://www.youtube.com/watch?v=FxSQxyJAVsU "Getting Started with Programming Over The Air")
 [![Registering Your Device on the POTA Dashboard](https://img.youtube.com/vi/aC1VmWriOm0/0.jpg)](https://www.youtube.com/watch?v=aC1VmWriOm0 "Registering Your Device on the POTA Dashboard")
 [![Your first OTA Update](https://img.youtube.com/vi/u2OzN_Ubm_A/0.jpg)](https://www.youtube.com/watch?v=u2OzN_Ubm_A "Your first OTA Update")
 
@@ -165,7 +165,7 @@ This project is licensed under the MIT License. See LICENSE for details.
 
 ## 🌐 Links
 
-📘 Documentation: [https://www.pleasedontcode.com/please-over-the-air](https://www.pleasedontcode.com/please-over-the-air/)
+📘 Documentation: [https://www.pleasedontcode.com/programming-over-the-air](https://www.pleasedontcode.com/programming-over-the-air/)
 
 ⚡️ Article: [https://www.pleasedontcode.com/blog/building-real-time-iot-dashboards-with-pota](https://www.pleasedontcode.com/blog/building-real-time-iot-dashboards-with-pota)
 

@@ -252,7 +252,8 @@ public:
                     const char* authToken,
                     const char* serverSecret,
                     const char* ssid = nullptr,
-                    const char* password = nullptr);
+                    const char* password = nullptr,
+                    const char* apiHost = "www.pleasedontcode.com");
     
     /**
      * @brief Retrieves platform-specific secure device identifier
@@ -467,6 +468,7 @@ private:
     char _firmwareVersion[32];   ///< Current firmware version
     char _authToken[64];         ///< Authentication token from POTA service
     char _serverSecret[65];      ///< Secret key for HMAC-SHA256 generation
+    char _apiHost[64];           ///< POTA API host (default www.pleasedontcode.com)
     
    /**
      * @brief Core HMAC-SHA256 calculation function

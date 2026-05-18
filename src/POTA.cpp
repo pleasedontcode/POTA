@@ -78,7 +78,8 @@ static WS_CLIENT_TYPE* _ws     = nullptr; ///< WebSocket client instance
 // API CONFIGURATION
 // ========================================
 #define POTA_PROTOCOL_VERSION "01.00"           ///< Current POTA protocol version
-#define API_HOST "www.pleasedontcode.com"       ///< POTA API server hostname
+// API host is no longer a compile-time constant: it is passed to begin()
+// (default "www.pleasedontcode.com") and stored in _apiHost.
 #define CHECK_UPDATE_API "/api/v1/check_update/" ///< OTA check endpoint
 #define GET_WS_TOKEN_API "/api/v1/get_ws_token/" ///< WebSocket token endpoint
 
@@ -138,7 +139,8 @@ POTAError POTA::begin(const char* deviceType,
                       const char* authToken,
                       const char* serverSecret,
                       const char* ssid,
-                      const char* password) 
+                      const char* password,
+                      const char* apiHost)
 {
     // If ssid is provided, manage Wi-Fi connection
     if (ssid != nullptr && strlen(ssid) > 0) {
@@ -202,7 +204,12 @@ POTAError POTA::begin(const char* deviceType,
 
     strncpy(_serverSecret, serverSecret, sizeof(_serverSecret) - 1);
     _serverSecret[sizeof(_serverSecret) - 1] = '\0';
-    
+
+    // API host: optional, defaults to the POTA production host
+    const char* host = (apiHost && strlen(apiHost) > 0) ? apiHost : "www.pleasedontcode.com";
+    strncpy(_apiHost, host, sizeof(_apiHost) - 1);
+    _apiHost[sizeof(_apiHost) - 1] = '\0';
+
     return POTAError::SUCCESS;
 }
 
@@ -888,7 +895,7 @@ POTAError POTA::checkOTAUpdate(char* outOTAUrl, size_t outOTAUrlSize) {
     #endif
 
     // Establish HTTPS connection to API server
-    if (!client.connect(API_HOST, 443)) {
+    if (!client.connect(_apiHost, 443)) {
         #if defined(ESP8266)
             // ESP8266: Retry with insecure mode (hotspot compatibility)
             Serial.println(F("[POTA] ⚠️  Secure connection failed, retrying without certificate validation..."));
@@ -900,7 +907,7 @@ POTAError POTA::checkOTAUpdate(char* outOTAUrl, size_t outOTAUrlSize) {
             client.setInsecure();
             
             // Retry connection
-            if (!client.connect(API_HOST, 443)) {
+            if (!client.connect(_apiHost, 443)) {
                 client.stop();
                 Serial.println(F("[POTA] ❌ Connection failed in both secure and insecure modes"));
                 return POTAError::CONNECTION_FAILED;
@@ -941,7 +948,8 @@ POTAError POTA::checkOTAUpdate(char* outOTAUrl, size_t outOTAUrlSize) {
 
     // --- Send HTTP POST request ---
     client.println("POST " CHECK_UPDATE_API " HTTP/1.1");
-    client.println("Host: " API_HOST);
+    client.print("Host: ");
+    client.println(_apiHost);
     client.println("Content-Type: application/json");
     client.print("Content-Length: ");
     client.println(bodyLen);
@@ -1016,7 +1024,10 @@ POTAError POTA::checkOTAUpdate(char* outOTAUrl, size_t outOTAUrlSize) {
     if (strcmp(expectedToken, server_token) != 0) return POTAError::TOKEN_MISMATCH;
 
     // --- Process update availability ---
-    if (update && strncmp(url, "https://" API_HOST, strlen("https://" API_HOST)) == 0) {
+    // expectedPrefix is built at RUNTIME: _apiHost is a runtime string, so a
+    // compile-time strlen() over a literal merge is not possible/safe here.
+    String expectedPrefix = String("https://") + _apiHost;
+    if (update && strncmp(url, expectedPrefix.c_str(), expectedPrefix.length()) == 0) {
         Serial.print(F("[POTA] ⬆️ New firmware version available: "));
         Serial.println(version);
         Serial.print(F("[POTA] 📝 Notes: "));
@@ -1072,7 +1083,7 @@ POTAError POTA::getWebSocketUrl(char* outWSHost, size_t outWSHostSize, char* out
         client.appendCustomCACert(root_ca);
     #endif
 
-    if (!client.connect(API_HOST, 443)) {
+    if (!client.connect(_apiHost, 443)) {
         #if defined(ESP8266)
             // ESP8266: Retry with insecure mode (hotspot compatibility)
             Serial.println(F("[POTA] ⚠️  Secure connection failed, retrying without certificate validation..."));
@@ -1081,7 +1092,7 @@ POTAError POTA::getWebSocketUrl(char* outWSHost, size_t outWSHostSize, char* out
             delay(100);
             client.setInsecure();
             
-            if (!client.connect(API_HOST, 443)) {
+            if (!client.connect(_apiHost, 443)) {
                 client.stop();
                 Serial.println(F("[POTA] ❌ Connection failed in both secure and insecure modes"));
                 return POTAError::CONNECTION_FAILED;
@@ -1122,7 +1133,8 @@ POTAError POTA::getWebSocketUrl(char* outWSHost, size_t outWSHostSize, char* out
 
     // --- Send HTTP POST request ---
     client.println("POST " GET_WS_TOKEN_API " HTTP/1.1");
-    client.println("Host: " API_HOST);
+    client.print("Host: ");
+    client.println(_apiHost);
     client.println("Content-Type: application/json");
     client.print("Content-Length: ");
     client.println(bodyLen);

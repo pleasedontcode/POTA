@@ -4,7 +4,7 @@
   Author: Francesco Alessandro Colucci (pleasedontcode.com)
   License: MIT (see LICENSE file in the root of this project)
   Repository: https://github.com/pleasedontcode/POTA
-  Website/Service: https://www.pleasedontcode.com/please-over-the-air/
+  Website/Service: https://www.pleasedontcode.com/programming-over-the-air/
 
   Description:
     Demonstrates safe OTA updates using POTA library with WebSocket notifications.
@@ -98,7 +98,7 @@ void setup() {
   delay(2000);
   
   Serial.println(F("\n╔════════════════════════════════════════╗"));
-  Serial.println(F("║     POTA - Please Over The Air         ║"));
+  Serial.println(F("║   POTA - Programming Over The Air      ║"));
   Serial.println(F("║      Safe OTA Update Example           ║"));
   Serial.println(F("╚════════════════════════════════════════╝\n"));
   

@@ -4,12 +4,12 @@
   Author: Francesco Alessandro Colucci (pleasedontcode.com)
   License: MIT (see LICENSE file in the root of this project)
   Repository: https://github.com/pleasedontcode/POTA
-  Website/Service: https://www.pleasedontcode.com/please-over-the-air/
+  Website/Service: https://www.pleasedontcode.com/programming-over-the-air/
 
   Description:
     This example retrieves and prints the unique secure device
     MAC address using the POTA library. The MAC address is required
-    when registering the device on the Please Over The Air (POTA)
+    when registering the device on the Programming Over The Air (POTA)
     service at https://www.pleasedontcode.com, in order to enable
     remote OTA management for your firmware.
 

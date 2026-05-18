@@ -1,13 +1,13 @@
 /*
-  POTA.cpp - Please Over The Air library implementation
+  POTA.cpp - Programming Over The Air library implementation
   -----------------------------------------------------
   Author: Francesco Alessandro Colucci (pleasedontcode.com)
   License: MIT (see LICENSE file in the root of this project)
   Repository: https://github.com/pleasedontcode/POTA
-  Website/Service: https://www.pleasedontcode.com/please-over-the-air/
+  Website/Service: https://www.pleasedontcode.com/programming-over-the-air/
 
   Description:
-    Implementation of the Please Over The Air (POTA) library.
+    Implementation of the Programming Over The Air (POTA) library.
     Contains all logic for:
       - Secure MAC address retrieval (platform-specific)
       - Wi-Fi initialization and OTA client setup

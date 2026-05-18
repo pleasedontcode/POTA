@@ -1,13 +1,13 @@
 /*
-  POTA.h - Please Over The Air library header
+  POTA.h - Programming Over The Air library header
   -------------------------------------------
   Author: Francesco Alessandro Colucci (pleasedontcode.com)
   License: MIT (see LICENSE file in the root of this project)
   Repository: https://github.com/pleasedontcode/POTA
-  Website/Service: https://www.pleasedontcode.com/please-over-the-air
+  Website/Service: https://www.pleasedontcode.com/programming-over-the-air
 
   Description:
-    Public API for the Please Over The Air (POTA) library.
+    Public API for the Programming Over The Air (POTA) library.
     Provides a unified interface to:
       - Retrieve secure device identifiers (e.g. MAC address)
       - Initialize OTA client with optional Wi-Fi management

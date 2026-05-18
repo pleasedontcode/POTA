@@ -4,9 +4,9 @@
   Author: Francesco Alessandro Colucci (pleasedontcode.com)
   License: MIT (see LICENSE file in the root of this project)
   Repository: https://github.com/pleasedontcode/POTA
-  Website/Service: https://www.pleasedontcode.com/please-over-the-air
+  Website/Service: https://www.pleasedontcode.com/programming-over-the-air
   
-  Part of the POTA (Please Over The Air) Library
+  Part of the POTA (Programming Over The Air) Library
   
   This header defines the public API for the POTA Dashboard system,
   which enables real-time widget-based UI synchronization between
